@@ -1,10 +1,14 @@
 import React, {Component} from 'react'
 import {Form, Icon, Input, Button, message} from 'antd';
+import { Redirect } from 'react-router-dom'
 // import md5 from 'md5'
 
 import './login.less'
-import logo from './images/logo.svg'
+import logo from '../../assets/images/logo.svg'
 import {reqLogin} from '../../api/index'
+import memoryUtils from '../../utils/memoryUtils'
+import storageUtils from '../../utils/storageUtils'
+
 
 class Login extends Component {
     handleSubmit = (event) => {
@@ -16,6 +20,11 @@ class Login extends Component {
                 const result = await reqLogin(username, password)
                 /* async await使用 */
                 if (result.status === 0) {
+                    const user = result.data
+                    //存储登录信息
+                    memoryUtils.user = user
+                    storageUtils.saveUser(user)
+
                     this.props.history.push('/')
                     message.success('登录成功')
                 } else {
@@ -39,6 +48,10 @@ class Login extends Component {
     }
 
     render() {
+        const user = memoryUtils.user
+        if (user && user._id) {
+            return <Redirect to='/'></Redirect>
+        }
         const {getFieldDecorator} = this.props.form
         return (
             <div className='login'>
