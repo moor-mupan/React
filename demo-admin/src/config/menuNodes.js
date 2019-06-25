@@ -1,58 +1,58 @@
-export default
 const menuNodes = [
     {
         title: '首页',
         key: '/home',
-        icon: ''
+        icon: 'windows'
     },
     {
         title: '商品',
         key: '/product',
-        icon: '',
+        icon: 'shop',
         children: [
             {
                 title: '品类管理',
                 key: '/category',
-                icon: ''
+                icon: 'appstore'
             },
             {
                 title: '商品管理',
                 key: '/goods',
-                icon: ''
+                icon: 'shopping'
             }
         ]
     },
     {
         title: '用户管理',
         key: '/user',
-        icon: ''
+        icon: 'user'
     },
     {
         title: '角色管理',
         key: '/role',
-        icon: ''
+        icon: 'team'
     },
     {
         title: '图形图表',
         key: '/charts',
-        icon: '',
+        icon: 'area-chart',
         children: [
-            ,
             {
                 title: '柱状图',
                 key: '/bar',
-                icon: ''
+                icon: 'bar-chart'
             },
             {
                 title: '折线图',
                 key: '/line',
-                icon: ''
+                icon: 'line-chart'
             },
             {
                 title: '饼图',
                 key: '/pie',
-                icon: ''
+                icon: 'pie-chart'
             }
         ]
     }
 ]
+
+export default menuNodes
