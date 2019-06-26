@@ -6,6 +6,7 @@ import './admin-header.less'
 import {reqWeather} from '../../api'
 import storageUtils from '../../utils/storageUtils'
 import memoryUtils from '../../utils/memoryUtils'
+import menuList from '../../config/menuNodes'
 class AdminHeader extends Component {
     state = {
         weather: '',
@@ -44,7 +45,28 @@ class AdminHeader extends Component {
         })
     }
 
+    getTitle = () => {
+        const path = this.props.location.pathname
+        let title
+        menuList.forEach(item => {
+            if (item.key === path) {
+                title = item.title
+            } else {
+                if (item.children) {
+                    const citem = item.children.find(citem =>{
+                        return citem.key === path
+                    })
+                    if (citem) {
+                        title = citem.title
+                    }
+                }
+            }
+        })
+        return title
+    }
+
     render() {
+        const title = this.getTitle()
         return (
             <div className='header'>
                 <div className='header-top'>
@@ -52,7 +74,7 @@ class AdminHeader extends Component {
                     <span className='header-top-logout' onClick={this.logout}>退出</span>
                 </div>
                 <div className='header-bottom'>
-                    <div className='header-bottom-left'>首页</div>
+                    <div className='header-bottom-left'>{title}</div>
                     <div className='header-bottom-right'>
                         <span>{this.state.Date}</span>
                         <img src={this.state.picUrl} alt="weather"/>
