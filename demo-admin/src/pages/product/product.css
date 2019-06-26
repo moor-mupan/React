@@ -1,0 +1,9 @@
+.handle {
+  display: flex;
+  justify-content: space-around;
+}
+.item {
+  padding-bottom: 10px;
+  line-height: 30px;
+}
+/*# sourceMappingURL=product.css.map */

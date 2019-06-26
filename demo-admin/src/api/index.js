@@ -2,8 +2,13 @@ import ajax from './ajax'
 import jsonp from 'jsonp'
 import { message } from 'antd'
 
-    //登录接口
+    // 登录接口
     export const reqLogin = (username, password) => ajax('/login', {username, password}, 'POST')
+    // 获取分类列表
+    export const reqCategorys = (parentId) => ajax('/manage/category/list', {parentId})
+    // 添加商品分类
+    export const reqAddCategory = (categoryName, parentId) => ajax('/manage/category/add', {categoryName,parentId}, 'POST')
+
 
     //获取天气接口 jsonp请求
     export const reqWeather = (city) => {
