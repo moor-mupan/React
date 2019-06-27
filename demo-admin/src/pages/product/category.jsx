@@ -16,11 +16,11 @@ export default class Category extends Component {
             },
             {
                 title: '操作',
-                width: 200,
+                width: 300,
                 render: () => (
                     <div className='handle'>
-                        <a href="javascript:;">修改</a>
-                        <a href="javascript:;">查看二级菜单</a>
+                        <Button type='primary'>修改</Button>
+                        <Button type='primary'>查看二级菜单</Button>
                     </div>
                 )
             }
@@ -41,7 +41,6 @@ export default class Category extends Component {
                     return item
                 })
                 this.setState({tableData})
-                this.getTableData()
             })
     }
 
@@ -54,22 +53,25 @@ export default class Category extends Component {
     }
 
     addClassify = async () => {
-        const {parentId, name} = this.state
+        const name = this.inputName.input.value
+        const parentId = this.inputParentId.input.value
+
         if (!parentId || !name) {
             message.error('信息填写不完整')
         } else {
-            const result = await reqAddCategory(parentId, name)
+            const result = await reqAddCategory(name, parentId)
             if (result.status === 0) {
                 message.success('添加成功')
             }else {
                 message.error('添加失败')
             }
             this.setState({visible: false})
+            this.getTableData()
         }
     }
 
     render() {
-        const {columns, tableData, parentId, name} = this.state
+        const {columns, tableData} = this.state
         return (
             <Card title="一级菜单列表" extra={
                 <Button type='primary' onClick={this.showModal}>
@@ -88,11 +90,11 @@ export default class Category extends Component {
                 >
                     <div className='item'>
                         商品名称:
-                        <Input />
+                        <Input ref={(input) => this.inputName = input } />
                     </div>
                     <div className='item'>
                         ParentId:
-                        <Input />
+                        <Input ref={(input) => this.inputParentId = input }/>
                     </div>
                 </Modal>
             </Card>
