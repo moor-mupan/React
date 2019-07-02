@@ -3,23 +3,28 @@ import {Modal, Card, Input, Button, Icon, Table, message} from 'antd'
 
 import {reqCategorys} from '../../api/index'
 import {reqAddCategory} from '../../api/index'
+import {reqEditCategoryName} from '../../api/index'
 import './product.less'
 
 export default class Category extends Component {
 
     state = {
+        modalTitle: '添加商品品类',
+        editFlag: false,
+        inputParentId: '',
+        inputName: '',
         tableData: [],
         columns: [
             {
                 title: '商品列表',
-                dataIndex: 'name'
+                dataIndex: 'name',
             },
             {
                 title: '操作',
                 width: 300,
-                render: () => (
+                render: (_, item) => (
                     <div className='handle'>
-                        <Button type='primary'>修改</Button>
+                        <Button type='primary' onClick={(e)=> this.showModal(1, item)}>修改</Button>
                         <Button type='primary'>查看二级菜单</Button>
                     </div>
                 )
@@ -44,8 +49,24 @@ export default class Category extends Component {
             })
     }
 
-    showModal = () => {
-        this.setState({visible: true})
+    showModal = (edit, item) => {
+        if (edit === 1) {
+            this.setState({
+                visible: true,
+                modalTitle: '编辑品类名称',
+                editFlag: true,
+                inputName: item.name,
+                inputParentId: item.parentId
+            })
+        }else {
+            this.setState({
+                visible: true,
+                modalTitle: '添加商品品类',
+                editFlag: false,
+                inputName: '',
+                inputParentId: ''
+            })
+        }
     }
 
     hideModal = () => {
@@ -53,16 +74,15 @@ export default class Category extends Component {
     }
 
     addClassify = async () => {
-        const name = this.inputName.input.value
-        const parentId = this.inputParentId.input.value
+        const {inputParentId, inputName} = this.state
 
-        if (!parentId || !name) {
+        if (!inputParentId || !inputName) {
             message.error('信息填写不完整')
         } else {
-            const result = await reqAddCategory(name, parentId)
+            const result = await reqAddCategory(inputName, inputParentId)
             if (result.status === 0) {
                 message.success('添加成功')
-            }else {
+            } else {
                 message.error('添加失败')
             }
             this.setState({visible: false})
@@ -70,10 +90,37 @@ export default class Category extends Component {
         }
     }
 
+    /* 编辑品类名称 */
+    editCategoryName = async () => {
+        const {inputName, inputParentId} = this.state
+
+        const result = await reqEditCategoryName(inputParentId, inputName)
+        if (result.status === 0) {
+            message.success('编辑成功')
+        } else {
+            message.error(result.msg)
+        }
+        this.hideModal()
+    }
+
+    /* inputName */
+    inputNameChange = (e) => {
+        this.setState({
+            inputName: e.target.value
+        })
+    }
+
+    /* inputParentId */
+    inputParentIdChange = (e) => {
+        this.setState({
+            inputParentId: e.target.value
+        })
+    }
+
     render() {
-        const {columns, tableData} = this.state
+        const {columns, tableData, modalTitle,editFlag,inputParentId,inputName} = this.state
         return (
-            <Card title="一级菜单列表" extra={
+            <Card title="一级分类列表" extra={
                 <Button type='primary' onClick={this.showModal}>
                     <Icon type="plus"/>
                     添加
@@ -81,20 +128,20 @@ export default class Category extends Component {
             }>
                 <Table pagination={{defaultPageSize: 4}} bordered dataSource={tableData} columns={columns}/>
                 <Modal
-                    title="添加商品分类"
+                    title={modalTitle}
                     visible={this.state.visible}
-                    onOk={this.addClassify}
+                    onOk={!editFlag ? this.addClassify : this.editCategoryName}
                     onCancel={this.hideModal}
                     okText="确认"
                     cancelText="取消"
                 >
                     <div className='item'>
                         商品名称:
-                        <Input ref={(input) => this.inputName = input } />
+                        <Input value={inputName} onChange={this.inputNameChange} />
                     </div>
                     <div className='item'>
                         ParentId:
-                        <Input ref={(input) => this.inputParentId = input }/>
+                        <Input value={inputParentId} onChange={this.inputParentIdChange} disabled={editFlag}/>
                     </div>
                 </Modal>
             </Card>
