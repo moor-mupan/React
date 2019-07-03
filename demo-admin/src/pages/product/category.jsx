@@ -25,7 +25,7 @@ export default class Category extends Component {
                 render: (_, item) => (
                     <div className='handle'>
                         <Button type='primary' onClick={(e)=> this.showModal(1, item)}>修改</Button>
-                        <Button type='primary'>查看二级菜单</Button>
+                        <Button type='primary'  onClick={(e)=> this.lookChild(_, item)}>查看二级菜单</Button>
                     </div>
                 )
             }
@@ -117,6 +117,11 @@ export default class Category extends Component {
         })
     }
 
+    /* 查看二级列表 */
+    lookChild (_, item) {
+        const Id = item.key
+        message.info('功能开发中...')
+    }
     render() {
         const {columns, tableData, modalTitle,editFlag,inputParentId,inputName} = this.state
         return (
