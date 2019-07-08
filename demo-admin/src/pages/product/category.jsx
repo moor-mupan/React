@@ -1,20 +1,32 @@
 import React, {Component} from 'react'
 import {Modal, Card, Input, Button, Icon, Table, message} from 'antd'
 
-import {reqCategorys} from '../../api/index'
-import {reqAddCategory} from '../../api/index'
-import {reqEditCategoryName} from '../../api/index'
+import {reqCategorys, reqAddCategory, reqEditCategoryName} from '../../api/index'
+import AddForm from './add-form'
+import EditForm from './edit-form'
 import './product.less'
 
 export default class Category extends Component {
 
     state = {
-        modalTitle: '添加商品品类',
-        editFlag: false,
-        inputParentId: '',
-        inputName: '',
+        loading: false,
         tableData: [],
-        columns: [
+        parentId: '0',
+        categoryName: '',
+        visiblModal: 0  // 0都不显示 1 添加 2 编辑
+    }
+
+    componentWillMount() {
+        this.initColumns()
+    }
+
+    componentDidMount() {
+        this.getTableInfos()
+    }
+
+    /* 初始化table表头 */
+    initColumns = () => {
+        this.columns = [
             {
                 title: '商品列表',
                 dataIndex: 'name',
@@ -22,132 +34,134 @@ export default class Category extends Component {
             {
                 title: '操作',
                 width: 300,
-                render: (_, item) => (
+                render: (rows) => (
                     <div className='handle'>
-                        <Button type='primary' onClick={(e)=> this.showModal(1, item)}>修改</Button>
-                        <Button type='primary'  onClick={(e)=> this.lookChild(_, item)}>查看二级菜单</Button>
+                        <Button type='primary' onClick={() => this.showEditModal(rows)}>修改</Button>
+                        {
+                            this.state.parentId === '0' ?
+                                (<Button type='primary' onClick={() => this.getChildInfos(rows)}>查看二级菜单</Button>)
+                                : null
+                        }
+
                     </div>
                 )
             }
-        ],
-        visible: false,
+        ]
     }
 
-    componentWillMount() {
-        this.getTableData()
-    }
-
-    getTableData = () => {
-        reqCategorys('0')
+    /* 获取一级或二级分类数据 */
+    getTableInfos = () => {
+        const {parentId} = this.state
+        this.setState({
+            loading: true
+        })
+        reqCategorys(parentId)
             .then(res => {
-                let tableData = res.data
-                tableData.map(item => {
-                    item.key = item._id
-                    return item
+                this.setState({
+                    loading: false
                 })
-                this.setState({tableData})
+                if (res.status === 0) {
+                    this.setState({
+                        tableData: res.data
+                    })
+                }
             })
     }
 
-    showModal = (edit, item) => {
-        if (edit === 1) {
-            this.setState({
-                visible: true,
-                modalTitle: '编辑品类名称',
-                editFlag: true,
-                inputName: item.name,
-                inputParentId: item.parentId
-            })
-        }else {
-            this.setState({
-                visible: true,
-                modalTitle: '添加商品品类',
-                editFlag: false,
-                inputName: '',
-                inputParentId: ''
-            })
-        }
-    }
-
-    hideModal = () => {
-        this.setState({visible: false})
-    }
-
-    addClassify = async () => {
-        const {inputParentId, inputName} = this.state
-
-        if (!inputParentId || !inputName) {
-            message.error('信息填写不完整')
-        } else {
-            const result = await reqAddCategory(inputName, inputParentId)
-            if (result.status === 0) {
-                message.success('添加成功')
-            } else {
-                message.error('添加失败')
-            }
-            this.setState({visible: false})
-            this.getTableData()
-        }
-    }
-
-    /* 编辑品类名称 */
-    editCategoryName = async () => {
-        const {inputName, inputParentId} = this.state
-
-        const result = await reqEditCategoryName(inputParentId, inputName)
-        if (result.status === 0) {
-            message.success('编辑成功')
-        } else {
-            message.error(result.msg)
-        }
-        this.hideModal()
-    }
-
-    /* inputName */
-    inputNameChange = (e) => {
+    /* 获取一级分类列表数据 */
+    getParentInfos = () => {
         this.setState({
-            inputName: e.target.value
+            parentId: '0'
+        }, () => {
+            this.getTableInfos()
         })
     }
 
-    /* inputParentId */
-    inputParentIdChange = (e) => {
+    /* 获取二级分类列表数据 */
+    getChildInfos = (rows) => {
+        const parentId = rows._id
+        const categoryName = rows.name
         this.setState({
-            inputParentId: e.target.value
+            parentId,
+            categoryName
+        }, () => {
+            this.getTableInfos()
         })
     }
 
-    /* 查看二级列表 */
-    lookChild (_, item) {
-        const Id = item.key
-        message.info('功能开发中...')
+    /* 显示添加分类弹窗 */
+    showAddModal = () => {
+        this.setState({
+            visiblModal: 1
+        })
     }
+
+    /* 显示修改分类弹窗 */
+    showEditModal = (rows) => {
+        this.setState({
+            visiblModal: 2
+        })
+    }
+
+    /* 添加分类确定 */
+    handleAddOk = () => {
+        this.setState({
+            visiblModal: 0
+        })
+    }
+
+    /* 编辑分类确定 */
+    handleEditOk = () => {
+        this.setState({
+            visiblModal: 0
+        })
+    }
+
+    /* 关闭弹窗 */
+    handleCancel = () => {
+        this.setState({
+            visiblModal: 0
+        })
+    }
+
     render() {
-        const {columns, tableData, modalTitle,editFlag,inputParentId,inputName} = this.state
+        const {loading, tableData, parentId, categoryName, visiblModal} = this.state
         return (
-            <Card title="一级分类列表" extra={
-                <Button type='primary' onClick={this.showModal}>
+            <Card title={
+                parentId === '0' ? '一级分类列表' :
+                    (<div>
+                        <span onClick={this.getParentInfos}>一级分类列表</span>
+                        <Icon type='arrow-right' style={{marginRight: 12, marginLeft: 12}}></Icon>
+                        <span>{categoryName}</span>
+                    </div>)
+            } extra={
+                <Button type='primary' onClick={this.showAddModal}>
                     <Icon type="plus"/>
                     添加
                 </Button>
             }>
-                <Table pagination={{defaultPageSize: 4}} bordered dataSource={tableData} columns={columns}/>
+                <Table
+                    loading={loading}
+                    rowKey='_id'
+                    pagination={{defaultPageSize: 4}}
+                    bordered dataSource={tableData}
+                    columns={this.columns}
+                />
                 <Modal
-                    title={modalTitle}
-                    visible={this.state.visible}
-                    onOk={!editFlag ? this.addClassify : this.editCategoryName}
-                    onCancel={this.hideModal}
-                    okText="确认"
-                    cancelText="取消"
+                    title="添加分类"
+                    visible={visiblModal === 1}
+                    onOk={this.handleAddOk}
+                    onCancel={this.handleCancel}
                 >
-                    <div className='item'>
-                        商品名称:
-                        <Input value={inputName} onChange={this.inputNameChange} />
-                    </div>
-                    <div className='item'>
-                        ParentId:
-                        <Input value={inputParentId} onChange={this.inputParentIdChange} disabled={editFlag}/>
-                    </div>
+                    <AddForm />
+                </Modal>
+                <Modal
+                    title="编辑分类"
+                    visible={visiblModal === 2}
+                    onOk={this.handleEditOk}
+                    onCancel={this.handleCancel}
+                >
+                    <EditForm />
                 </Modal>
             </Card>
         )
