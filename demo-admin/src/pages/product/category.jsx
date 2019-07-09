@@ -111,7 +111,8 @@ export default class Category extends Component {
     }
 
     /* 编辑分类确定 */
-    handleEditOk = () => {
+    handleEditOk = (e) => {
+        console.log(e)
         this.setState({
             visiblModal: 0
         })
@@ -161,7 +162,7 @@ export default class Category extends Component {
                     onOk={this.handleEditOk}
                     onCancel={this.handleCancel}
                 >
-                    <EditForm />
+                    <EditForm/>
                 </Modal>
             </Card>
         )
