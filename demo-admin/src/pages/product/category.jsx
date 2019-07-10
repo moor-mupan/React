@@ -111,8 +111,10 @@ export default class Category extends Component {
     }
 
     /* 编辑分类确定 */
-    handleEditOk = (e) => {
-        console.log(e)
+    handleEditOk =  async (e) => {
+        const {parentId, categoryName} = this.state
+        const result = await reqEditCategoryName(parentId, categoryName)
+        console.log(result)
         this.setState({
             visiblModal: 0
         })
@@ -154,7 +156,7 @@ export default class Category extends Component {
                     onOk={this.handleAddOk}
                     onCancel={this.handleCancel}
                 >
-                    <AddForm />
+                    <AddForm/>
                 </Modal>
                 <Modal
                     title="编辑分类"
@@ -162,7 +164,7 @@ export default class Category extends Component {
                     onOk={this.handleEditOk}
                     onCancel={this.handleCancel}
                 >
-                    <EditForm/>
+                    <EditForm />
                 </Modal>
             </Card>
         )
