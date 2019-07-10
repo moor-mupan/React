@@ -1,13 +1,25 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
+
 import {Form, Input, Icon, Select} from 'antd'
 
 const Item = Form.Item
 const Option = Select.Option
 
 class AddForm extends Component {
+    static propTypes = {
+        tableData: PropTypes.array.isRequired,
+        setForm: PropTypes.func.isRequired
+    }
+
+    componentWillMount() {
+        this.props.setForm(this.props.form)
+    }
 
     render() {
         const {getFieldDecorator} = this.props.form
+        const {tableData} = this.props
+        console.log(tableData)
         return (
             <Form onSubmit={this.handleSubmit} className="login-form">
                 <Item>

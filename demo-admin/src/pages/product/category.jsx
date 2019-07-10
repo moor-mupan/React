@@ -99,27 +99,37 @@ export default class Category extends Component {
     /* 显示修改分类弹窗 */
     showEditModal = (rows) => {
         this.category = rows
-
         this.setState({
             visiblModal: 2
         })
     }
 
     /* 添加分类确定 */
-    handleAddOk = () => {
+    handleAddOk = async () => {
         this.setState({
             visiblModal: 0
         })
+        const result = await reqAddCategory('图书', '0')
+        if (result.status === 0) {
+            message.success('添加成功')
+            this.getTableInfos()
+        }
     }
 
     /* 编辑分类确定 */
-    handleEditOk = async (e) => {
-        console.log(this.form)
-        // const {parentId, categoryName} = this.state
-        // const result = await reqEditCategoryName(parentId, categoryName)
-        // if (result.status === 0) {
-        //     message.success('修改成功')
-        // }
+    handleEditOk = () => {
+        this.form.validateFields(async (err, values) => {
+            if (!err) {
+                const {parentId} = this.state
+                const categoryName = values.name
+                const result = await reqEditCategoryName(parentId, categoryName)
+                if (result.status === 0) {
+                    message.success('修改成功')
+                } else {
+                    message.error(result.msg)
+                }
+            }
+        })
         this.setState({
             visiblModal: 0
         })
@@ -162,7 +172,7 @@ export default class Category extends Component {
                     onOk={this.handleAddOk}
                     onCancel={this.handleCancel}
                 >
-                    <AddForm/>
+                    <AddForm tableData={tableData} setForm={(form) => this.form = form}/>
                 </Modal>
                 <Modal
                     title="编辑分类"
