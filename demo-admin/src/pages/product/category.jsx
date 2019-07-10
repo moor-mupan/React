@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Modal, Card, Input, Button, Icon, Table, message} from 'antd'
+import {Modal, Card, Button, Icon, Table, message} from 'antd'
 
 import {reqCategorys, reqAddCategory, reqEditCategoryName} from '../../api/index'
 import AddForm from './add-form'
@@ -98,6 +98,8 @@ export default class Category extends Component {
 
     /* 显示修改分类弹窗 */
     showEditModal = (rows) => {
+        this.category = rows
+
         this.setState({
             visiblModal: 2
         })
@@ -111,10 +113,12 @@ export default class Category extends Component {
     }
 
     /* 编辑分类确定 */
-    handleEditOk =  async (e) => {
+    handleEditOk = async (e) => {
         const {parentId, categoryName} = this.state
         const result = await reqEditCategoryName(parentId, categoryName)
-        console.log(result)
+        if (result.status === 0) {
+            message.success('修改成功')
+        }
         this.setState({
             visiblModal: 0
         })
@@ -129,6 +133,7 @@ export default class Category extends Component {
 
     render() {
         const {loading, tableData, parentId, categoryName, visiblModal} = this.state
+        const category = this.category || {}
         return (
             <Card title={
                 parentId === '0' ? '一级分类列表' :
@@ -164,7 +169,7 @@ export default class Category extends Component {
                     onOk={this.handleEditOk}
                     onCancel={this.handleCancel}
                 >
-                    <EditForm />
+                    <EditForm categoryName={category.name}/>
                 </Modal>
             </Card>
         )
