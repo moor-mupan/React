@@ -105,15 +105,25 @@ export default class Category extends Component {
     }
 
     /* 添加分类确定 */
-    handleAddOk = async () => {
+    handleAddOk = () => {
         this.setState({
             visiblModal: 0
         })
-        const result = await reqAddCategory('图书', '0')
-        if (result.status === 0) {
-            message.success('添加成功')
-            this.getTableInfos()
-        }
+        this.form.validateFields(async (err, values) => {
+            if (!err) {
+                const categoryName = values.name
+                const parentId = values.parentId
+                const result = await reqAddCategory(categoryName, parentId)
+
+                // 清除输入数据
+                this.form.resetFields()
+
+                if (result.status === 0) {
+                    message.success('添加成功')
+                    this.getTableInfos()
+                }
+            }
+        });
     }
 
     /* 编辑分类确定 */
@@ -123,6 +133,10 @@ export default class Category extends Component {
                 const {parentId} = this.state
                 const categoryName = values.name
                 const result = await reqEditCategoryName(parentId, categoryName)
+
+                // 清除输入数据
+                this.form.resetFields()
+
                 if (result.status === 0) {
                     message.success('修改成功')
                 } else {
@@ -150,7 +164,7 @@ export default class Category extends Component {
                 parentId === '0' ? '一级分类列表' :
                     (<div>
                         <span onClick={this.getParentInfos}>一级分类列表</span>
-                        <Icon type='arrow-right' style={{marginRight: 12, marginLeft: 12}}></Icon>
+                        <Icon type='arrow-right' style={{marginRight: 12, marginLeft: 12}} />
                         <span>{categoryName}</span>
                     </div>)
             } extra={
@@ -172,7 +186,7 @@ export default class Category extends Component {
                     onOk={this.handleAddOk}
                     onCancel={this.handleCancel}
                 >
-                    <AddForm tableData={tableData} setForm={(form) => this.form = form}/>
+                    <AddForm tableData={tableData} parentId={parentId} setForm={(form) => this.form = form}/>
                 </Modal>
                 <Modal
                     title="编辑分类"

@@ -18,16 +18,22 @@ class AddForm extends Component {
 
     render() {
         const {getFieldDecorator} = this.props.form
-        const {tableData} = this.props
-        console.log(tableData)
+        const {tableData, parentId} = this.props
         return (
             <Form onSubmit={this.handleSubmit} className="login-form">
                 <Item>
-                    <Select defaultValue='0'>
-                        <Option value='0'>一级分类列表</Option>
-                        <Option value='1'>电脑</Option>
-                        <Option value='2'>图书</Option>
-                    </Select>
+                    {
+                        getFieldDecorator('parentId', {
+                            initialValue: parentId
+                        })(
+                            <Select>
+                                <Option value='0'>一级分类列表</Option>
+                                {
+                                    tableData.map(item => <Option value={item._id} key={item._id}>{item.name}</Option>)
+                                }
+                            </Select>
+                        )
+                    }
                 </Item>
                 <Item>
                     {getFieldDecorator('name', {
