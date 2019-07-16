@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
-import {Button, Table} from 'antd'
+import {Button, Card, Form, Icon, Input, Select, Table} from 'antd'
 import {reqGetGoodList} from '../../api/index'
+import {NavLink} from "react-router-dom";
+
+const Option = Select.Option
 
 export default class GoodsList extends Component {
     componentWillMount() {
@@ -135,14 +138,25 @@ export default class GoodsList extends Component {
 
     render() {
         return (
-            <Table
-                className='goods-table'
-                rowKey='id'
-                bordered
-                dataSource={this.dataSource}
-                columns={this.columns}
-                pagination={{pageSizeOptions: ['10']}}
-            />
+            <Card className='goods' title={
+                <Form className='goods-search'>
+                    <Select defaultValue='0'>
+                        <Option value='0'>按名称搜索</Option>
+                        <Option value='1'>按价格区间搜索</Option>
+                    </Select>
+                    <Input placeholder='关键字'/>
+                    <Button type='primary'><Icon type='search'/>搜索</Button>
+                </Form>
+            } extra={<NavLink to='/goods/add'><Button type='primary' onClick={this.addHandle}><Icon type='plus'/>添加</Button></NavLink>}>
+                <Table
+                    className='goods-table'
+                    rowKey='id'
+                    bordered
+                    dataSource={this.dataSource}
+                    columns={this.columns}
+                    pagination={{pageSizeOptions: ['10']}}
+                />
+            </Card>
         )
     }
 }
