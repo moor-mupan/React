@@ -91,6 +91,11 @@ export default class User extends Component {
     }
 
     render() {
+        const formItemLayout = {
+            labelCol: { span: 4 },
+            wrapperCol: { span: 20 },
+        }
+
         return (
             <Card title={
                 <Button type='primary' onClick={this.showModal}>
@@ -102,33 +107,29 @@ export default class User extends Component {
                     dataSource={this.dataSource}
                     columns={this.columns}
                     bordered
-                />
+                    rowKey='key'
+            />
                 <Modal
                     title="添加用户"
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                 >
-                    <Form>
-                        <Item>
-                            <span>用户名：</span>
-                            <Input  />
+                    <Form {...formItemLayout}>
+                        <Item label='用户名'>
+                            <Input placeholder='请输入用户名'  />
                         </Item>
-                        <Item>
-                            <span>密码：</span>
-                            <Input  />
+                        <Item label='密码'>
+                            <Input placeholder='请输入密码' />
                         </Item>
-                        <Item>
-                            <span>邮箱：</span>
-                            <Input  />
+                        <Item label='角色'>
+                            <Input placeholder='请输入角色'/>
                         </Item>
-                        <Item>
-                            <span>手机号：</span>
-                            <Input  />
+                        <Item label='邮箱'>
+                            <Input placeholder='请输入邮箱'/>
                         </Item>
-                        <Item>
-                            <span>角色：</span>
-                            <Input  />
+                        <Item label='电话'>
+                            <Input placeholder='请输入电话'/>
                         </Item>
                     </Form>
                 </Modal>
