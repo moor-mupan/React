@@ -12,8 +12,8 @@ export const reqAddCategory = (categoryName, parentId) => ajax('/manage/category
 export const reqEditCategoryName = (categoryId, categoryName) => ajax('/manage/category/update', {categoryId, categoryName}, 'POST')
 // 获取商品列表
 export const reqGetGoodList = (pageNum, pageSize) => ajax('/manage/product/list', {pageNum, pageSize})
-// 修改/添加商品
-export const reqAddOrUpdateProduct = (product) => ajax('/manage/product/' + ( product._id?'update':'add'), product, 'POST')
+// 添加商品
+export const reqAddProduct = (product) => ajax('/manage/product/add', product, 'POST')
 
 
 //获取天气接口 jsonp请求
